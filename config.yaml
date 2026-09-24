@@ -1,0 +1,31 @@
+# Subreddits to include in the daily digest
+subreddits:
+  # AI and models
+  - MachineLearning
+  - artificial
+  - ArtificialInteligence
+  - LocalLLaMA
+  - OpenAI
+  - ClaudeAI
+  - singularity
+  - deeplearning
+  # Investing and markets
+  - investing
+  - stocks
+  - StockMarket
+  - SecurityAnalysis
+  - ValueInvesting
+  - economics
+  - finance
+  - options
+
+# Posts per subreddit
+limit: 10
+
+# "new", "hot" or "top"
+sort: top
+# Only for sort: top ("day", "week")
+time_filter: day
+
+# Local digest files older than this are deleted
+retention_days: 7
