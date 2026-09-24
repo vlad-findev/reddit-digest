@@ -19,7 +19,7 @@ A small personal, read-only automation that builds a daily digest of new and top
 ## API usage
 
 - Library: [PRAW](https://praw.readthedocs.io/)
-- Volume: roughly 20 to 40 requests per run (16 subreddits), 1 to 3 runs per day, well within the published rate limits.
+- Volume: roughly 20 to 40 requests per run (17 subreddits), 1 to 3 runs per day, well within the published rate limits.
 - User-Agent: `reddit-digest/0.1 by u/<your_username>`
 
 ## Setup

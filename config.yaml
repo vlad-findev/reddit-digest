@@ -18,6 +18,7 @@ subreddits:
   - economics
   - finance
   - options
+  - quant
 
 # Posts per subreddit
 limit: 10
