@@ -33,6 +33,21 @@ python digest.py            # real run, requires approved API access
 
 The digest is written to `output/digest-YYYY-MM-DD.md`.
 
+## Example output
+
+```markdown
+# Reddit digest, 2026-09-24
+
+## r/LocalLLaMA
+
+- [Sample post: running a small model on a laptop](https://www.reddit.com/r/LocalLLaMA/comments/example3/) (980 points, 150 comments, 16:13 UTC)
+  > Placeholder body text for testing.
+
+## r/investing
+
+- [Sample thread: how do you think about long-term allocation?](https://www.reddit.com/r/investing/comments/example4/) (150 points, 203 comments, 17:13 UTC)
+```
+
 ## Status
 
 Early development. The digest logic is tested against `sample_data/posts.json`; the live API part will be enabled once Data API access is approved.
