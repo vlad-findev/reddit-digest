@@ -7,6 +7,7 @@ Usage:
 
 import argparse
 import json
+import logging
 import os
 import time
 from datetime import date, datetime, timezone
@@ -16,6 +17,9 @@ import yaml
 
 BASE = Path(__file__).parent
 OUTPUT_DIR = BASE / "output"
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+log = logging.getLogger("reddit-digest")
 
 
 def load_config():
@@ -40,25 +44,37 @@ def fetch_live(cfg):
 
     posts = []
     for name in cfg["subreddits"]:
-        sub = reddit.subreddit(name)
-        if cfg["sort"] == "top":
-            items = sub.top(time_filter=cfg.get("time_filter", "day"), limit=cfg["limit"])
-        elif cfg["sort"] == "hot":
-            items = sub.hot(limit=cfg["limit"])
-        else:
-            items = sub.new(limit=cfg["limit"])
-        for p in items:
-            # Only post-level fields; author names are intentionally not stored.
-            posts.append({
-                "subreddit": name,
-                "title": p.title,
-                "selftext": p.selftext[:500],
-                "score": p.score,
-                "num_comments": p.num_comments,
-                "created_utc": p.created_utc,
-                "permalink": f"https://www.reddit.com{p.permalink}",
-            })
+        try:
+            posts.extend(fetch_subreddit(reddit.subreddit(name), name, cfg))
+        except Exception as e:  # private, banned or renamed subreddit, network error
+            log.warning("Skipping r/%s: %s", name, e)
+        # Small pause between subreddits to keep the request rate low.
+        time.sleep(cfg.get("request_delay", 1))
     return posts
+
+
+def fetch_subreddit(sub, name, cfg):
+    if cfg["sort"] == "top":
+        items = sub.top(time_filter=cfg.get("time_filter", "day"), limit=cfg["limit"])
+    elif cfg["sort"] == "hot":
+        items = sub.hot(limit=cfg["limit"])
+    else:
+        items = sub.new(limit=cfg["limit"])
+    result = []
+    for p in items:
+        if p.stickied:  # skip pinned mod posts, they repeat every day
+            continue
+        # Only post-level fields; author names are intentionally not stored.
+        result.append({
+            "subreddit": name,
+            "title": p.title,
+            "selftext": p.selftext[:500],
+            "score": p.score,
+            "num_comments": p.num_comments,
+            "created_utc": p.created_utc,
+            "permalink": f"https://www.reddit.com{p.permalink}",
+        })
+    return result
 
 
 def fetch_sample():
@@ -109,7 +125,7 @@ def main():
     out = OUTPUT_DIR / f"digest-{date.today().isoformat()}.md"
     out.write_text(build_digest(posts, cfg), encoding="utf-8")
     cleanup(cfg.get("retention_days", 7))
-    print(f"Digest written to {out}")
+    log.info("Digest written to %s (%d posts)", out, len(posts))
 
 
 if __name__ == "__main__":

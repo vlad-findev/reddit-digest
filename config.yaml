@@ -28,5 +28,8 @@ sort: top
 # Only for sort: top ("day", "week")
 time_filter: day
 
+# Seconds to wait between subreddits
+request_delay: 1
+
 # Local digest files older than this are deleted
 retention_days: 7
